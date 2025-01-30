@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Latihan Soal</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        h1, h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+
+        #timer {
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin: 10px 0;
+        }
+
+        input[type="text"] {
+            width: 60%;
+            padding: 10px;
+            margin: 10px auto;
+            display: block;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .question {
+            background-color: #fff;
+            margin: 10px auto;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+        }
+
+        .question p {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .question label {
+            display: block;
+            margin: 8px 0;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .question input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        button {
+            display: inline-block;
+            margin: 10px 5px;
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        #result {
+            display: none;
+            background-color: #fff;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        #result h2 {
+            color: #2c3e50;
+        }
+
+        #result p {
+            font-size: 16px;
+            margin: 10px 0;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 20px;
+            }
+
+            h2 {
+                font-size: 16px;
+            }
+
+            input[type="text"] {
+                width: 90%;
+                font-size: 14px;
+            }
+
+            .question {
+                padding: 10px;
+            }
+
+            .question p {
+                font-size: 14px;
+            }
+
+            .question label {
+                font-size: 13px;
+            }
+
+            button {
+                width: 90%;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Latihan Soal Sejarah</h1>
+    <div id="timer">Waktu Tersisa: 05:00</div>
+    <form id="userInfo">
+        <h2>Nama: <input type="text" id="nama" placeholder="Masukkan Nama" required></h2>
+        <h2>Kelas: <input type="text" id="kelas" placeholder="Masukkan Kelas" required></h2>
+        <button type="button" onclick="nextSession()">Lanjut ke Pertanyaan</button>
+    </form>
+
+    <!-- Sesi Pertama -->
+    <div id="session1" style="display: none;">
+        <form id="quiz">
+            <!-- Soal-soal di sini (sama seperti sebelumnya) -->
+            <!-- ... -->
+        </form>
+    </div>
+
+    <!-- Sesi Kedua -->
+    <div id="session2" style="display: none;">
+        <div class="question" id="currentQuestion">
+            <!-- Pertanyaan akan diisi oleh JavaScript -->
+        </div>
+        <div style="text-align: center;">
+            <button type="button" onclick="prevQuestion()">Kembali</button>
+            <button type="button" onclick="saveAndConfirm()" id="nextButton">Simpan</button>
+        </div>
+    </div>
+
+    <!-- Hasil Pengerjaan -->
+    <div id="result">
+        <h2>Hasil Pengerjaan</h2>
+        <p id="resultNama"></p>
+        <p id="resultKelas"></p>
+        <p id="resultWaktu"></p>
+        <p id="resultBenar"></p>
+        <p id="resultSalah"></p>
+        <p id="resultNilai"></p>
+        <p>Silahkan screenshot hasil Anda.</p>
+        <button type="button" onclick="startAgain()">Mulai Kembali (Percobaan ke-<span id="attempt">1</span>)</button>
+    </div>
+
+    <script>
+        let timeLeft = 300; // 5 menit dalam detik
+        let timerInterval;
+        let attempt = 1;
+        let currentQuestionIndex = 0;
+        const userAnswers = []; // Array untuk menyimpan jawaban pengguna
+        const questions = [
+            {
+                question: "1. Peradaban Mesopotamia terletak di antara dua sungai besar, yaitu...",
+                options: [
+                    { label: "a. Sungai Nil dan Sungai Tigris", value: "a" },
+                    { label: "b. Sungai Tigris dan Sungai Eufrat", value: "b" },
+                    { label: "c. Sungai Indus dan Sungai Gangga", value: "c" },
+                    { label: "d. Sungai Kuning dan Sungai Yangtze", value: "d" }
+                ],
+                answer: "b"
+            },
+            {
+                question: "2. Zaman prasejarah dimana manusia mulai mengenal pertanian dan beternak disebut...",
+                options: [
+                    { label: "a. Zaman Paleolitikum", value: "a" },
+                    { label: "b. Zaman Neolitikum", value: "b" },
+                    { label: "c. Zaman Mesolitikum", value: "c" },
+                    { label: "d. Zaman Logam", value: "d" }
+                ],
+                answer: "b"
+            },
+            {
+                question: "3. Peradaban Mesir Kuno dikenal dengan sistem kepercayaannya yang memuja banyak dewa. Kepercayaan ini disebut...",
+                options: [
+                    { label: "a. Monoteisme", value: "a" },
+                    { label: "b. Politeisme", value: "b" },
+                    { label: "c. Animisme", value: "c" },
+                    { label: "d. Dinamisme", value: "d" }
+                ],
+                answer: "b"
+            },
+            {
+                question: "4. Bangunan piramida di Mesir Kuno digunakan untuk...",
+                options: [
+                    { label: "a. Tempat tinggal raja", value: "a" },
+                    { label: "b. Tempat pemujaan dewa", value: "b" },
+                    { label: "c. Makam raja (firaun)", value: "c" },
+                    { label: "d. Tempat penyimpanan hasil panen", value: "d" }
+                ],
+                answer: "c"
+            },
+            {
+                question: "5. Peradaban Lembah Sungai Indus terkenal dengan kota kuno yang terencana dengan baik, yaitu...",
+                options: [
+                    { label: "a. Harappa dan Mohenjo-Daro", value: "a" },
+                    { label: "b. Babylon dan Nineveh", value: "b" },
+                    { label: "c. Thebes dan Memphis", value: "c" },
+                    { label: "d. Ur dan Uruk", value: "d" }
+                ],
+                answer: "a"
+            },
+            {
+                question: "6. Sistem tulisan yang digunakan oleh peradaban Mesopotamia disebut...",
+                options: [
+                    { label: "a. Hieroglif", value: "a" },
+                    { label: "b. Cuneiform", value: "b" },
+                    { label: "c. Sanskrit", value: "c" },
+                    { label: "d. Latin", value: "d" }
+                ],
+                answer: "b"
+            },
+            {
+                question: "7. Zaman logam dibagi menjadi tiga periode, yaitu...",
+                options: [
+                    { label: "a. Tembaga, Perunggu, dan Besi", value: "a" },
+                    { label: "b. Perunggu, Besi, dan Emas", value: "b" },
+                    { label: "c. Besi, Perak, dan Emas", value: "c" },
+                    { label: "d. Tembaga, Perak, dan Emas", value: "d" }
+                ],
+                answer: "a"
+            },
+            {
+                question: "8. Peradaban Mesir Kuno mengenal sistem penulisan yang disebut...",
+                options: [
+                    { label: "a. Cuneiform", value: "a" },
+                    { label: "b. Hieroglif", value: "b" },
+                    { label: "c. Sanskrit", value: "c" },
+                    { label: "d. Latin", value: "d" }
+                ],
+                answer: "b"
+            },
+            {
+                question: "9. Peradaban Cina Kuno terkenal dengan tembok besar yang dibangun untuk...",
+                options: [
+                    { label: "a. Melindungi dari serangan musuh", value: "a" },
+                    { label: "b. Menandai batas wilayah", value: "b" },
+                    { label: "c. Menjadi tempat pemujaan", value: "c" },
+                    { label: "d. Menjadi simbol kekuasaan", value: "d" }
+                ],
+                answer: "a"
+            },
+            {
+                question: "10. Peradaban Yunani Kuno dikenal sebagai tempat lahirnya...",
+                options: [
+                    { label: "a. Demokrasi", value: "a" },
+                    { label: "b. Monarki", value: "b" },
+                    { label: "c. Oligarki", value: "c" },
+                    { label: "d. Teokrasi", value: "d" }
+                ],
+                answer: "a"
+            }
+        ]
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                document.getElementById('timer').textContent = `Waktu Tersisa: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    showResult();
+                }
+            }, 1000);
+        }
+
+        function nextSession() {
+            const nama = document.getElementById('nama').value;
+            const kelas = document.getElementById('kelas').value;
+
+            if (!nama || !kelas) {
+                alert("Silahkan isi nama dan kelas terlebih dahulu.");
+                return;
+            }
+
+            document.getElementById('userInfo').style.display = 'none';
+            document.getElementById('session1').style.display = 'none';
+            document.getElementById('session2').style.display = 'block';
+            showQuestion(currentQuestionIndex);
+        }
+
+        function showQuestion(index) {
+            const question = questions[index];
+            const questionHTML = `
+                <p>${question.question}</p>
+                ${question.options.map(opt => `
+                    <label><input type="radio" name="q${index + 1}" value="${opt.value}" ${userAnswers[index] === opt.value ? 'checked' : ''}> ${opt.label}</label>
+                `).join('')}
+            `;
+            document.getElementById('currentQuestion').innerHTML = questionHTML;
+
+            // Update tombol "Lanjut" atau "Simpan"
+            if (index === questions.length - 1) {
+                document.getElementById('nextButton').textContent = 'Simpan';
+                document.getElementById('nextButton').onclick = saveAndConfirm;
+            } else {
+                document.getElementById('nextButton').textContent = 'Lanjut';
+                document.getElementById('nextButton').onclick = nextQuestion;
+            }
+        }
+
+        function nextQuestion() {
+            const selected = document.querySelector(`input[name="q${currentQuestionIndex + 1}"]:checked`);
+            if (!selected) {
+                alert("Silahkan pilih jawaban terlebih dahulu.");
+                return;
+            }
+
+            // Simpan jawaban pengguna
+            userAnswers[currentQuestionIndex] = selected.value;
+
+            if (currentQuestionIndex < questions.length - 1) {
+                currentQuestionIndex++;
+                showQuestion(currentQuestionIndex);
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                showQuestion(currentQuestionIndex);
+            }
+        }
+
+        function saveAndConfirm() {
+            const selected = document.querySelector(`input[name="q${currentQuestionIndex + 1}"]:checked`);
+            if (!selected) {
+                alert("Silahkan pilih jawaban terlebih dahulu.");
+                return;
+            }
+
+            // Simpan jawaban pengguna
+            userAnswers[currentQuestionIndex] = selected.value;
+
+            const confirmView = confirm("Apakah Anda yakin ingin melihat nilai Anda?");
+            if (confirmView) {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            clearInterval(timerInterval);
+            const nama = document.getElementById('nama').value;
+            const kelas = document.getElementById('kelas').value;
+            let benar = 0;
+            let salah = 0;
+
+            questions.forEach((q, index) => {
+                if (userAnswers[index] === q.answer) {
+                    benar++;
+                } else {
+                    salah++;
+                }
+            });
+
+            const nilai = (benar / questions.length) * 100;
+
+            // Tampilkan hasil
+            document.getElementById('session2').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('resultNama').textContent = `Nama: ${nama}`;
+            document.getElementById('resultKelas').textContent = `Kelas: ${kelas}`;
+            document.getElementById('resultWaktu').textContent = `Waktu Pengerjaan: ${formatTime(300 - timeLeft)}`;
+            document.getElementById('resultBenar').textContent = `Benar: ${benar}`;
+            document.getElementById('resultSalah').textContent = `Salah: ${salah}`;
+            document.getElementById('resultNilai').textContent = `Nilai: ${nilai.toFixed(2)}`;
+        }
+
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+        }
+
+        function startAgain() {
+            attempt++;
+            document.getElementById('attempt').textContent = attempt;
+            document.getElementById('userInfo').style.display = 'block';
+            document.getElementById('session1').style.display = 'none';
+            document.getElementById('session2').style.display = 'none';
+            document.getElementById('result').style.display = 'none';
+            timeLeft = 300;
+            currentQuestionIndex = 0;
+            userAnswers.length = 0; // Reset jawaban pengguna
+            startTimer();
+        }
+
+        // Mulai timer saat halaman dimuat
+        startTimer();
+    </script>
+</body>
+</html>
