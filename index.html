@@ -38,7 +38,8 @@
         }
 
         input[type="text"] {
-            width: 60%;
+		text-align: center;
+            width: 50%;
             padding: 10px;
             margin: 10px auto;
             display: block;
@@ -75,8 +76,8 @@
         }
 
         button {
-            display: inline-block;
-            margin: 10px 5px;
+            display: inline-block;		
+            margin: 10px 100px;
             padding: 12px 24px;
             font-size: 16px;
             background-color: #3498db;
@@ -148,7 +149,7 @@
 </head>
 <body>
     <h1>Latihan Soal Sejarah</h1>
-    <div id="timer">Waktu Tersisa: 05:00</div>
+    <div id="timer">Waktu Tersisa: 02:40</div>
     <form id="userInfo">
         <h2>Nama: <input type="text" id="nama" placeholder="Masukkan Nama" required></h2>
         <h2>Kelas: <input type="text" id="kelas" placeholder="Masukkan Kelas" required></h2>
@@ -188,7 +189,7 @@
     </div>
 
     <script>
-        let timeLeft = 300; // 5 menit dalam detik
+        let timeLeft = 160; // 5 menit dalam detik
         let timerInterval;
         let attempt = 1;
         let currentQuestionIndex = 0;
